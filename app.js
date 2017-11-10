@@ -17,15 +17,16 @@ var options = {
 
 // Setup Restify Server
 
-/*https.createServer(options, function (req, res) {
-  res.writeHead(200);
-  res.end("hello world\n");
-}).listen(4444);*/
+var server = restify.createServer();
+server.listen(process.env.port || process.env.PORT || 8080, function () {
+    console.log('%s listening to %s', server.name, server.url);
+});
 
+/*
 var server = restify.createServer(options);
 server.listen(process.env.port || process.env.PORT || 4444, function () {
     console.log('%s listening to %s', server.name, server.url);
-});
+});*/
 
 // Create chat bot
 var connector = new builder.ChatConnector({
