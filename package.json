@@ -1,4 +1,20 @@
-"scripts": {
-  "start": "node app.js"
-},
-"main": "app.js"
+{
+  "name": "SapphireIMS-automation",
+  "version": "1.0.0",
+  "description": "SapphireIMS Automation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "",
+  "dependencies": {
+    "botbuilder": "^3.11.0",
+    "node-rest-client": "^3.1.0",
+    "restify": "^4.3.1",
+    "uuid": "^3.1.0"
+  },
+  "keywords": [
+    "SapphireIMS"
+  ]
+}
