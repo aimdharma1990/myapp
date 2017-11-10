@@ -129,4 +129,4 @@ function (session, results, next) {
 }	
 ]);
 
-server.post('/api/messages', connector.listen());
+//server.post('/api/messages', connector.listen());
