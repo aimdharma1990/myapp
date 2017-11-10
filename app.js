@@ -7,12 +7,20 @@ const USBEnable = 'USB Enable';
 const AccountPasswordReset='AccountPasswordReset';
 
 
+var server_port = process.env.OPENSHIFT_NODEJS_PORT || 8080
+var server_ip_address = process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1'
+
+var server = restify.createServer(); 
+server.listen(server_port, server_ip_address, function () {
+  console.log( "Listening on " + server_ip_address + ", port " + server_port )
+});
+
 
 
 // Setup Restify Server
 
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 8080, function () {
+
+/*server.listen(process.env.port || process.env.PORT || 8080, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 

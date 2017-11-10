@@ -1,20 +1,4 @@
-{
-  "name": "SapphireIMS-automation",
-  "version": "1.0.0",
-  "description": "SapphireIMS Automation",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "",
-  "dependencies": {
-    "botbuilder": "^3.11.0",
-    "node-rest-client": "^3.1.0",
-    "restify": "^4.3.1",
-    "uuid": "^3.1.0"
-  },
-  "keywords": [
-    "SapphireIMS"
-  ]
-}
+"scripts": {
+  "start": "node app.js"
+},
+"main": "app.js"
