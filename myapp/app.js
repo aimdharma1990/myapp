@@ -3,11 +3,27 @@ var restify = require('restify');
 var Client = require('node-rest-client').Client;
 var client = new Client();
 const UserPasswordReset = 'Change Password'; 
+const USBEnable = 'USB Enable';
+const AccountPasswordReset='AccountPasswordReset';
+
+var https = require('https');
+var fs = require('fs');
+
+var options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
 
 
 // Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3979, function () {
+
+/*https.createServer(options, function (req, res) {
+  res.writeHead(200);
+  res.end("hello world\n");
+}).listen(4444);*/
+
+var server = restify.createServer(options);
+server.listen(process.env.port || process.env.PORT || 4444, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
 
@@ -24,80 +40,90 @@ var bot = new builder.UniversalBot(connector, [
         session.beginDialog('UserInformation');
     }]);
 	
-	
+var DialogLabels = {
+    PasswordReset: 'Password Reset',
+    AutomationJobs: 'Automation Jobs'
+};
 
 bot.dialog('UserInformation', [
 function (session) {
 	builder.Prompts.text(session, 'Hello... What\'s your name?');
-},
-function (session, results) {`
-	session.userData.name = results.response;
-	console.log(session.userData.name);
-	
-	client.get("http://172.16.11.24:8181/AutomationJobs/webresources/items/GetUserDetail/"+ session.userData.name, function (data, response) {
-		
-		if( response["statusCode"] == 200 )
-		{
-			console.log("Response got"+data["value"]);
-			
-			//if( data["value"] == null || data["value].length != 0 )
-			{
-				function(session) {
-					builder.Prompts.choice(session, "Hello "+ data["value"] + " \n How can I help you today?", "UserPasswordReset|USB Enable|Account Password Reset", { listStyle: builder.ListStyle.button });
-				},
-					function (session, results) {
-						session.send("result.response"+result.response);
-						if (result.response) {
-							session.send("result.response"+result.response);
-							 switch (result.response) {
-								case UserPasswordReset:
-									session.beginDialog('PasswordReset');
-								break;
-							 }
-						}
-					}
-				
-			}
-		}
-			
-    // parsed response body as js object 
-    //console.log(data);
-    // raw response 
-    //console.log(response);
-});
+}, 
 
-	//builder.Prompts.number(session, 'Hi ' + results.response + ', How many years have you been coding?');
-	session.endDialog();
-}]);
+function(session, result, next){
+	session.send("Looking for Name");
+	client.get("http://gaia:8181/AutomationJobs/webresources/items/GetUserDetail/"+ session.userData.name, function (data, response) {
+		
+		if( response["statusCode"] != 200 )
+		{
+			session.endDialog();
+		   
+			
+		}
+		else
+		{
+			session.dialogData.fullname=data["value"] ;
+			next();
+			
+		}
+	})
 	
-	
+},
+function (session) {
+		builder.Prompts.choice(session, "Hello "+ session.dialogData.fullname + " \n How can I help you today?", "UserPasswordReset|USBEnable|AccountPasswordReset", { listStyle: builder.ListStyle.button });
+		//next();
+	},
+	function (session, results) {
+		session.send("result.response"+result.response);
+		//if (result.response) {
+							session.send("result.response"+result.response);
+							 //switch (result.response) {
+								//case UserPasswordReset:
+									session.beginDialog('PasswordReset');
+								//break;
+							 //}
+	//	}
+	}
+
+]);
+
 bot.dialog('PasswordReset', [
 function (session) {
 	
 	builder.Prompts.text(session, 'Kindly enter the Password?');
+	
 },
-function (session, results) {
+function (session, results, next) {
 	var password  = results.response;
-	builder.Prompts.text(session, 'Kindly confrim the Password?');
+	//next();
+	
 },
 	function (session) {
+		builder.Prompts.text(session, 'Kindly confirm the Password?');
+		
 	},
-	function (session, results) {
+	function (session, results, next) {
 		var confirmpassword  = results.response;
-		if (password == password) 
+		if (1 == 1) 
 		{
-			builder.Prompts.number(session, 'Kindly enter the PIN?');
+			//next();
+			
 		}
 		else{
 			session.send("Passwords are not matched");
 			session.endDialog();
 		}
-	}	
+	},
+function (session) {
+	
+	builder.Prompts.number(session, 'Kindly enter the PIN?');
+	
+},
+function (session, results, next) {
+	session.send("Passwords reset Completed");
+			session.endDialog();
+	
+}	
 ]);
-//session.beginDialog('resetPassword:/');
 
-//Sub-Dialogs
-bot.library(require('./dialogs/reset-password'));
-
-
-server.post('/api/messages1', connector.listen());
+server.post('/api/messages', connector.listen());
