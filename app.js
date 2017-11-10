@@ -129,4 +129,4 @@ function (session, results, next) {
 }	
 ]);
 
-server.post('/app/messages', connector.listen());
+server.post('/', connector.listen());
